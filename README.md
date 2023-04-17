@@ -97,7 +97,7 @@ def rectangle_degree(contours_arr):
 
 #### 圆度
 
-圆度计算公式：$ \frac{4\pi \times A}{P^2} $
+圆度计算公式：$ \frac{4\pi A}{P^2} $
 
 $A$代表区域面积
 
