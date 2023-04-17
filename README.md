@@ -18,9 +18,9 @@
    
    样例（部分）
    
-   | filename | area | inscribedCircle | circumscribedCircle | specificValue |
-   | -------- | ---- | --------------- | ------------------- | ------------- |
-   | 29-10014 | 3300 | 44              | 86                  | 0.511627907   |
+   | filename | length           | area    | inscribedCircle | circumscribedCircle | specificValue     | rectangleDegree  |
+   | -------- | ---------------- | ------- | --------------- | ------------------- | ----------------- | ---------------- |
+   | 1-40033  | 872.163554668426 | 43250.5 | 156             | 318                 | 0.490566037735849 | 0.82947889825871 |
 
 2. 输出特征提取参照图片到./Out文件夹中
 
@@ -67,6 +67,12 @@ def circle_out(filename, img, contours_arr):
     return radius * 2
 ```
 
+像素周长
+
+```python
+cv2.arcLength(contours[1], True)
+```
+
 像素面积
 
 ```python
@@ -77,4 +83,14 @@ cv2.contourArea(contours[1])
 
 ```python
 dataDic['inscribedCircle'] / dataDic['circumscribedCircle']
+```
+
+矩形度
+
+```python
+def rectangle_degree(contours_arr):
+    bound_rect = cv2.minAreaRect(contours_arr[1])  # 获取最小外接矩形
+    box = cv2.boxPoints(bound_rect)  # 转化为矩形点集
+    area_rect = cv2.contourArea(box)
+    return cv2.contourArea(contours[1]) / area_rect  # 图像面积除以矩形面积
 ```

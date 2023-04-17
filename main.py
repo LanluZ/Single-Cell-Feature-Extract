@@ -40,6 +40,14 @@ def circle_out(filename, img, contours_arr):
     return radius * 2
 
 
+# 矩形度计算
+def rectangle_degree(contours_arr):
+    bound_rect = cv2.minAreaRect(contours_arr[1])  # 获取最小外接矩形
+    box = cv2.boxPoints(bound_rect)  # 转化为矩形点集
+    area_rect = cv2.contourArea(box)
+    return cv2.contourArea(contours[1]) / area_rect  # 图像面积除以矩形面积
+
+
 originFile = []  # 存储将要处理的图片
 currentPath = os.getcwd().replace('\\', '/') + '/Data'  # 获取当前所在目录
 for fileName in os.listdir(currentPath):  # 获取目录下文件名称
@@ -58,7 +66,8 @@ for fileName in os.listdir(outPath):  # 获取目录下文件名称
 
 # 数据存储对象
 csvfile = open('./Out/Data.csv', mode='w', newline='')
-fieldnames = ['filename', 'area', 'inscribedCircle', 'circumscribedCircle', 'specificValue']
+fieldnames = ['filename', 'length', 'area', 'inscribedCircle', 'circumscribedCircle', 'specificValue',
+              'rectangleDegree']
 write = csv.DictWriter(csvfile, fieldnames=fieldnames)
 write.writeheader()
 
@@ -94,6 +103,12 @@ for fileName in originFile:
 
     # 最小外接圆与最大内接圆直径比值
     dataDic['specificValue'] = dataDic['inscribedCircle'] / dataDic['circumscribedCircle']
+
+    # 矩形度计算
+    dataDic['rectangleDegree'] = rectangle_degree(contours)
+
+    # 轮廓周长
+    dataDic['length'] = cv2.arcLength(contours[1], True)
 
     # 数据写入
     write.writerow(dataDic)
