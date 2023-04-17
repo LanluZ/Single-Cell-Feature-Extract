@@ -7,7 +7,7 @@ import numpy as np
 
 
 # 内接圆绘制
-def circle_in(filename, img, contours_arr):
+def draw_circle_in(filename, img, contours_arr):
     # 计算到轮廓的距离
     raw_dist = np.empty(img.shape, dtype=np.float32)
     for i in range(img.shape[0]):
@@ -28,7 +28,7 @@ def circle_in(filename, img, contours_arr):
 
 
 # 外接圆绘制
-def circle_out(filename, img, contours_arr):
+def draw_circle_out(filename, img, contours_arr):
     cnt = contours_arr[1]
 
     (x, y), radius = cv2.minEnclosingCircle(cnt)
@@ -42,7 +42,7 @@ def circle_out(filename, img, contours_arr):
 
 
 # 矩形度计算
-def rectangle_degree(contours_area, contours_arr):
+def cal_rectangle_degree(contours_area, contours_arr):
     bound_rect = cv2.minAreaRect(contours_arr[1])  # 获取最小外接矩形
     box = cv2.boxPoints(bound_rect)  # 转化为矩形点集
     area_rect = cv2.contourArea(box)
@@ -50,7 +50,7 @@ def rectangle_degree(contours_area, contours_arr):
 
 
 # 圆度计算
-def circle_degree(contours_area, contours_length):
+def cal_circle_degree(contours_area, contours_length):
     return 4 * math.pi * contours_area / (contours_length ** 2)
 
 
@@ -107,19 +107,19 @@ for fileName in originFile:
     dataDic['length'] = length
 
     # 内接圆绘制
-    dataDic['inscribedCircle'] = circle_in(fileName, closed, contours)
+    dataDic['inscribedCircle'] = draw_circle_in(fileName, closed, contours)
 
     # 外接圆绘制
-    dataDic['circumscribedCircle'] = circle_out(fileName, closed, contours)
+    dataDic['circumscribedCircle'] = draw_circle_out(fileName, closed, contours)
 
     # 最小外接圆与最大内接圆直径比值
     dataDic['specificValue'] = dataDic['inscribedCircle'] / dataDic['circumscribedCircle']
 
     # 矩形度计算
-    dataDic['rectangleDegree'] = rectangle_degree(area, contours)
+    dataDic['rectangleDegree'] = cal_rectangle_degree(area, contours)
 
     # 圆度计算
-    dataDic['circleDegree'] = circle_degree(area, length)
+    dataDic['circleDegree'] = cal_circle_degree(area, length)
 
     # 数据写入
     write.writerow(dataDic)
