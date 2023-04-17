@@ -99,12 +99,10 @@ for fileName in originFile:
     cv2.imwrite('./Out/Draw-' + fileName, im)  # 图像轮廓输出 用于检查 防止出事
 
     # 像素面积获取
-    area = cv2.contourArea(contours[1])
-    dataDic['area'] = area
+    dataDic['area'] = cv2.contourArea(contours[1])
 
     # 轮廓周长
-    length = cv2.arcLength(contours[1], True)
-    dataDic['length'] = length
+    dataDic['length'] = cv2.arcLength(contours[1], True)
 
     # 内接圆绘制
     dataDic['inscribedCircle'] = draw_circle_in(fileName, closed, contours)
@@ -116,10 +114,10 @@ for fileName in originFile:
     dataDic['specificValue'] = dataDic['inscribedCircle'] / dataDic['circumscribedCircle']
 
     # 矩形度计算
-    dataDic['rectangleDegree'] = cal_rectangle_degree(area, contours)
+    dataDic['rectangleDegree'] = cal_rectangle_degree(dataDic['area'], contours)
 
     # 圆度计算
-    dataDic['circleDegree'] = cal_circle_degree(area, length)
+    dataDic['circleDegree'] = cal_circle_degree(dataDic['area'], dataDic['length'])
 
     # 数据写入
     write.writerow(dataDic)
