@@ -46,6 +46,16 @@ for fileName in os.listdir(currentPath):  # 获取目录下文件名称
     if fileName[-3:len(fileName)] == 'tif' and fileName[0:4] != 'draw':  # 筛选需要处理的图片
         originFile.append(fileName)
 
+# 删除先前处理文件
+outPath = currentPath[0:-5] + '/Out'
+for fileName in os.listdir(outPath + '/CircleIn'):  # 获取目录下文件名称
+    os.remove(outPath + '/CircleIn/' + fileName)
+for fileName in os.listdir(outPath + '/CircleOut'):  # 获取目录下文件名称
+    os.remove(outPath + '/CircleOut/' + fileName)
+for fileName in os.listdir(outPath):  # 获取目录下文件名称
+    if fileName[-3:len(fileName)] == 'tif':  # 筛选需要处理的图片
+        os.remove(outPath + '/' + fileName)
+
 # 数据存储对象
 csvfile = open('./Out/Data.csv', mode='w', newline='')
 fieldnames = ['filename', 'area', 'inscribedCircle', 'circumscribedCircle', 'specificValue']
