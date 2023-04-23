@@ -31,15 +31,15 @@ for fileName in originFile:
     dataDic = dict()  # 数据记录
     dataDic['filename'] = fileName[0:-4]
     im = cv2.imread('./Data/' + fileName)
-    imGray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)  # 图像二值化
+    imGray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)  # 以灰度读入图片
     imGray = cv2.blur(imGray, (3, 3))  # 图像滤波
 
     # 图像预处理
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
     opened = cv2.morphologyEx(imGray, cv2.MORPH_OPEN, kernel)
     closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, kernel)
 
-    ret, binary = cv2.threshold(closed, 180, 255, cv2.THRESH_BINARY)
+    ret, binary = cv2.threshold(imGray, 180, 255, cv2.THRESH_BINARY)
 
     # 图像轮廓获取
     contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -54,10 +54,16 @@ for fileName in originFile:
     dataDic['length'] = cv2.arcLength(contours[1], True)
 
     # 内接圆绘制
-    dataDic['inscribedCircle'] = draw_circle_in(fileName, closed, contours)
+    # dataDic['inscribedCircle'] = draw_circle_in(fileName, closed, contours)
 
     # 外接圆绘制
-    dataDic['circumscribedCircle'] = draw_circle_out(fileName, closed, contours)
+    # dataDic['circumscribedCircle'] = draw_circle_out(fileName, closed, contours)
+
+    # 内接圆计算
+    dataDic['inscribedCircle'] = cal_circle_in(imGray, contours)
+
+    # 外接圆计算
+    dataDic['circumscribedCircle'] = cal_circle_out(contours)
 
     # 最小外接圆与最大内接圆直径比值
     dataDic['specificValue'] = dataDic['inscribedCircle'] / dataDic['circumscribedCircle']

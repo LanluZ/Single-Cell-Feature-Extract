@@ -4,6 +4,21 @@ import math
 import numpy as np
 
 
+# 内接圆计算
+def cal_circle_in(img, contours_arr):
+    # 计算到轮廓的距离
+    raw_dist = np.empty(img.shape, dtype=np.float32)
+    for i in range(img.shape[0]):
+        for j in range(img.shape[1]):
+            raw_dist[i, j] = cv2.pointPolygonTest(contours_arr[1], (j, i), True)
+
+    # 获取最大值即内接圆半径，中心点坐标
+    min_val, max_val, _, max_dist_pt = cv2.minMaxLoc(raw_dist)
+    max_val = abs(max_val)
+    radius = np.int_(max_val)
+    return radius
+
+
 # 内接圆绘制
 def draw_circle_in(filename, img, contours_arr):
     # 计算到轮廓的距离
@@ -23,6 +38,14 @@ def draw_circle_in(filename, img, contours_arr):
     cv2.imwrite('./Out/CircleIn/' + filename, result)
 
     return radius * 2
+
+
+# 外接圆计算
+def cal_circle_out(contours_arr):
+    cnt = contours_arr[1]
+    (_, _), radius = cv2.minEnclosingCircle(cnt)
+    radius = int(radius)  # 半径
+    return radius
 
 
 # 外接圆绘制
