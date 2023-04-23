@@ -35,7 +35,7 @@ for fileName in originFile:
     imGray = cv2.blur(imGray, (3, 3))  # 图像滤波
 
     # 图像预处理
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
     opened = cv2.morphologyEx(imGray, cv2.MORPH_OPEN, kernel)
     closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, kernel)
 
