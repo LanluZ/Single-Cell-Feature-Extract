@@ -10,7 +10,7 @@ def cal_circle_in(img, contours_arr):
     raw_dist = np.empty(img.shape, dtype=np.float32)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-            raw_dist[i, j] = cv2.pointPolygonTest(contours_arr[1], (j, i), True)
+            raw_dist[i, j] = cv2.pointPolygonTest(contours_arr, (j, i), True)
 
     # 获取最大值即内接圆半径，中心点坐标
     min_val, max_val, _, max_dist_pt = cv2.minMaxLoc(raw_dist)
@@ -25,7 +25,7 @@ def draw_circle_in(filename, img, contours_arr):
     raw_dist = np.empty(img.shape, dtype=np.float32)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-            raw_dist[i, j] = cv2.pointPolygonTest(contours_arr[1], (j, i), True)
+            raw_dist[i, j] = cv2.pointPolygonTest(contours_arr, (j, i), True)
 
     # 获取最大值即内接圆半径，中心点坐标
     min_val, max_val, _, max_dist_pt = cv2.minMaxLoc(raw_dist)
@@ -42,7 +42,7 @@ def draw_circle_in(filename, img, contours_arr):
 
 # 外接圆计算
 def cal_circle_out(contours_arr):
-    cnt = contours_arr[1]
+    cnt = contours_arr
     (_, _), radius = cv2.minEnclosingCircle(cnt)
     radius = int(radius)  # 半径
     return radius
@@ -50,7 +50,7 @@ def cal_circle_out(contours_arr):
 
 # 外接圆绘制
 def draw_circle_out(filename, img, contours_arr):
-    cnt = contours_arr[1]
+    cnt = contours_arr
 
     (x, y), radius = cv2.minEnclosingCircle(cnt)
     center = (int(x), int(y))  # 最小内接圆圆心
@@ -64,7 +64,7 @@ def draw_circle_out(filename, img, contours_arr):
 
 # 矩形度计算
 def cal_rectangle_degree(contours_area, contours_arr):
-    bound_rect = cv2.minAreaRect(contours_arr[1])  # 获取最小外接矩形
+    bound_rect = cv2.minAreaRect(contours_arr)  # 获取最小外接矩形
     box = cv2.boxPoints(bound_rect)  # 转化为矩形点集
     area_rect = cv2.contourArea(box)
     return contours_area / area_rect  # 图像面积除以矩形面积

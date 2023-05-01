@@ -40,36 +40,38 @@ for fileName in originFile:
     closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, kernel)
 
     ret, binary = cv2.threshold(imGray, 180, 255, cv2.THRESH_BINARY)
+    # 反色
+    binary = cv2.bitwise_not(binary)
 
     # 图像轮廓获取
     contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    cv2.drawContours(im, contours, 1, (0, 0, 255), 1)
+    cv2.drawContours(im, contours, 0, (0, 0, 255), 1)
     cv2.imwrite('./Out/Draw-' + fileName, im)  # 图像轮廓输出 用于检查 防止出事
 
     # 像素面积获取
-    dataDic['area'] = cv2.contourArea(contours[1])
+    dataDic['area'] = cv2.contourArea(contours[0])
 
     # 轮廓周长
-    dataDic['length'] = cv2.arcLength(contours[1], True)
+    dataDic['length'] = cv2.arcLength(contours[0], True)
 
     # 内接圆绘制
-    # dataDic['inscribedCircle'] = draw_circle_in(fileName, closed, contours)
+    # dataDic['inscribedCircle'] = draw_circle_in(fileName, closed, contours[0])
 
     # 外接圆绘制
-    # dataDic['circumscribedCircle'] = draw_circle_out(fileName, closed, contours)
+    # dataDic['circumscribedCircle'] = draw_circle_out(fileName, closed, contours[0])
 
     # 内接圆计算
-    dataDic['inscribedCircle'] = cal_circle_in(imGray, contours)
+    dataDic['inscribedCircle'] = cal_circle_in(imGray, contours[0])
 
     # 外接圆计算
-    dataDic['circumscribedCircle'] = cal_circle_out(contours)
+    dataDic['circumscribedCircle'] = cal_circle_out(contours[0])
 
     # 最小外接圆与最大内接圆直径比值
     dataDic['specificValue'] = dataDic['inscribedCircle'] / dataDic['circumscribedCircle']
 
     # 矩形度计算
-    dataDic['rectangleDegree'] = cal_rectangle_degree(dataDic['area'], contours)
+    dataDic['rectangleDegree'] = cal_rectangle_degree(dataDic['area'], contours[0])
 
     # 圆度计算
     dataDic['circleDegree'] = cal_circle_degree(dataDic['area'], dataDic['length'])
