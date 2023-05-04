@@ -41,16 +41,16 @@ def drawCircleIn(filename, img, contours_arr):
 
 
 # 外接圆计算
-def calCircleOut(contours_arr):
-    cnt = contours_arr
+def calCircleOut(contour):
+    cnt = contour
     (_, _), radius = cv2.minEnclosingCircle(cnt)
     radius = int(radius)  # 半径
     return radius
 
 
 # 外接圆绘制
-def drawCircleOut(filename, img, contours_arr):
-    cnt = contours_arr
+def drawCircleOut(filename, img, contours):
+    cnt = contours
 
     (x, y), radius = cv2.minEnclosingCircle(cnt)
     center = (int(x), int(y))  # 最小内接圆圆心
@@ -63,8 +63,8 @@ def drawCircleOut(filename, img, contours_arr):
 
 
 # 矩形度计算
-def calRectangleDegree(contours_area, contours_arr):
-    bound_rect = cv2.minAreaRect(contours_arr)  # 获取最小外接矩形
+def calRectangleDegree(contours_area, contours):
+    bound_rect = cv2.minAreaRect(contours)  # 获取最小外接矩形
     box = cv2.boxPoints(bound_rect)  # 转化为矩形点集
     area_rect = cv2.contourArea(box)
     return contours_area / area_rect  # 图像面积除以矩形面积
