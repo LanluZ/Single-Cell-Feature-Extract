@@ -5,7 +5,7 @@ import numpy as np
 
 
 # 内接圆计算
-def cal_circle_in(img, contours_arr):
+def calCircleIn(img, contours_arr):
     # 计算到轮廓的距离
     raw_dist = np.empty(img.shape, dtype=np.float32)
     for i in range(img.shape[0]):
@@ -20,7 +20,7 @@ def cal_circle_in(img, contours_arr):
 
 
 # 内接圆绘制
-def draw_circle_in(filename, img, contours_arr):
+def drawCircleIn(filename, img, contours_arr):
     # 计算到轮廓的距离
     raw_dist = np.empty(img.shape, dtype=np.float32)
     for i in range(img.shape[0]):
@@ -41,7 +41,7 @@ def draw_circle_in(filename, img, contours_arr):
 
 
 # 外接圆计算
-def cal_circle_out(contours_arr):
+def calCircleOut(contours_arr):
     cnt = contours_arr
     (_, _), radius = cv2.minEnclosingCircle(cnt)
     radius = int(radius)  # 半径
@@ -49,7 +49,7 @@ def cal_circle_out(contours_arr):
 
 
 # 外接圆绘制
-def draw_circle_out(filename, img, contours_arr):
+def drawCircleOut(filename, img, contours_arr):
     cnt = contours_arr
 
     (x, y), radius = cv2.minEnclosingCircle(cnt)
@@ -63,7 +63,7 @@ def draw_circle_out(filename, img, contours_arr):
 
 
 # 矩形度计算
-def cal_rectangle_degree(contours_area, contours_arr):
+def calRectangleDegree(contours_area, contours_arr):
     bound_rect = cv2.minAreaRect(contours_arr)  # 获取最小外接矩形
     box = cv2.boxPoints(bound_rect)  # 转化为矩形点集
     area_rect = cv2.contourArea(box)
@@ -71,5 +71,5 @@ def cal_rectangle_degree(contours_area, contours_arr):
 
 
 # 圆度计算
-def cal_circle_degree(contours_area, contours_length):
+def calCircleDegree(contours_area, contours_length):
     return 4 * math.pi * contours_area / (contours_length ** 2)

@@ -62,19 +62,19 @@ for fileName in originFile:
     # dataDic['circumscribedCircle'] = draw_circle_out(fileName, closed, contours[0])
 
     # 内接圆计算
-    dataDic['inscribedCircle'] = cal_circle_in(imGray, contours[0])
+    dataDic['inscribedCircle'] = calCircleIn(imGray, contours[0])
 
     # 外接圆计算
-    dataDic['circumscribedCircle'] = cal_circle_out(contours[0])
+    dataDic['circumscribedCircle'] = calCircleOut(contours[0])
 
     # 最小外接圆与最大内接圆直径比值
     dataDic['specificValue'] = dataDic['inscribedCircle'] / dataDic['circumscribedCircle']
 
     # 矩形度计算
-    dataDic['rectangleDegree'] = cal_rectangle_degree(dataDic['area'], contours[0])
+    dataDic['rectangleDegree'] = calRectangleDegree(dataDic['area'], contours[0])
 
     # 圆度计算
-    dataDic['circleDegree'] = cal_circle_degree(dataDic['area'], dataDic['length'])
+    dataDic['circleDegree'] = calCircleDegree(dataDic['area'], dataDic['length'])
 
     # 数据写入
     write.writerow(dataDic)
