@@ -29,9 +29,9 @@ def main():
         write.writeheader()
 
         # 遍历图片文件
+        i = 0
         for filename in file_arr:
             data_dic = dict()  # 数据记录
-            data_dic['filename'] = filename
             im = cv2.imread('./Data/' + dirname + '/' + filename)
             im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)  # 以灰度读入图片
             im_gray = cv2.blur(im_gray, (3, 3))  # 图像滤波
@@ -46,6 +46,10 @@ def main():
 
             cv2.drawContours(im, contours, index, (0, 0, 255), 1)
             cv2.imwrite('./Out/Draw-' + filename, im)  # 图像轮廓输出 用于检查 防止出事
+
+            # 图像序号
+            data_dic['filename'] = i
+            i += 1
 
             # 像素面积获取
             data_dic['area'] = cv2.contourArea(contours[index])
@@ -78,6 +82,7 @@ def main():
             write.writerow(data_dic)
 
         csvfile.close()
+
         moveFile('./Out', aim_dir, dirname)
 
 
