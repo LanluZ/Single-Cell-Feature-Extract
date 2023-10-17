@@ -44,8 +44,19 @@ def main():
             contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             index = getMaxCounterIndex(contours)
 
-            cv2.drawContours(im, contours, index, (0, 0, 255), 1)
+            # 轮廓绘制
+            cv2.drawContours(im, contours, index, (118, 215, 234), 1)
             cv2.imwrite('./Out/Draw-' + filename, im)  # 图像轮廓输出 用于检查 防止出事
+
+            # 内接圆绘制
+            if not os.path.isdir('./Out/CI'):
+                os.mkdir('./Out/CI')
+            drawCircleIn(filename, './Out/CI', im_gray, contours[index])
+
+            # 外接圆绘制
+            if not os.path.isdir('./Out/CO'):
+                os.mkdir('./Out/CO')
+            drawCircleOut(filename, './Out/CO', im_gray, contours[index])
 
             # 图像序号
             data_dic['filename'] = i
@@ -56,12 +67,6 @@ def main():
 
             # 轮廓周长
             data_dic['length'] = cv2.arcLength(contours[index], True)
-
-            # 内接圆绘制
-            # data_dic['inscribedCircle'] = draw_circle_in(filename, closed, contours[0])
-
-            # 外接圆绘制
-            # data_dic['circumscribedCircle'] = draw_circle_out(filename, closed, contours[0])
 
             # 内接圆计算
             data_dic['inscribedCircle'] = calCircleIn(im_gray, contours[index])
@@ -103,10 +108,6 @@ def getMaxCounterIndex(contours):
 
 # 按特定结构删除指定文件夹下文件
 def delDirFile(path):
-    # for filename in os.listdir(path + '/CircleIn'):  # 获取目录下文件名称
-    #     os.remove(path + '/CircleIn/' + filename)
-    # for filename in os.listdir(path + '/CircleOut'):  # 获取目录下文件名称
-    #     os.remove(path + '/CircleOut/' + filename)
     for filename in os.listdir(path):  # 获取目录下文件名称
         if filename[-3:len(filename)] == 'tif':  # 筛选需要处理的图片
             os.remove(path + '/' + filename)
