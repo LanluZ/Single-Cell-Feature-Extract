@@ -1,4 +1,5 @@
 import csv
+import shutil
 
 from kit import *
 from move import *
@@ -14,12 +15,17 @@ def main():
     for dirname in dir_list:
 
         file_arr = []  # 存储将要处理的图片
-        current_path = os.getcwd().replace('\\', '/')  # 获取当前所在目录
+        current_path = os.path.dirname(__file__)  # 获取当前所在目录
         for filename in os.listdir(current_path + '/Data/' + dirname):  # 获取目录下文件名称
             file_arr.append(filename)
 
-        # 删除先前处理文件
-        delDirFile(current_path + '/Out')
+        # 删除并创建先前处理文件
+        try:
+            shutil.rmtree(os.path.join(current_path, 'Out'))
+        except FileNotFoundError:
+            pass
+
+        os.mkdir('./Out')
 
         # 数据存储对象
         csvfile = open('./Out/Data.csv', mode='w', newline='')
@@ -32,36 +38,42 @@ def main():
         i = 0
         for filename in file_arr:
             data_dic = dict()  # 数据记录
-            im = cv2.imread('./Data/' + dirname + '/' + filename)
-            im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)  # 以灰度读入图片
-            im_gray = cv2.blur(im_gray, (3, 3))  # 图像滤波
+            img = cv2.imread(os.path.join(current_path, 'Data', dirname, filename), cv2.IMREAD_UNCHANGED)
+            img = cv2.blur(img, (1, 1))  # 图像滤波
 
-            ret, binary = cv2.threshold(im_gray, 220, 255, cv2.THRESH_BINARY)
-            # 反色
-            binary = cv2.bitwise_not(binary)
+            # 获取透明度通道
+            alpha_channel = img[:, :, 3]
+            # 将透明部分填充为黑色
+            img[alpha_channel == 0] = [0, 0, 0, 255]  # 将RGB通道值设置为黑色，透明度设置为255
+            # 转化为8UC3三通道图像
+            img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+            # 图像二值化
+            ret, img_binary = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
+            # 转化为8UC1单通道图像
+            img_binary = cv2.cvtColor(img_binary, cv2.COLOR_BGR2GRAY)
 
-            print(f"开始处理:{str(filename)} 图形尺寸:{binary.shape}", end=' ')
+            print(f"开始处理:{str(filename)} 图形尺寸:{img_binary.shape}", end=' ')
 
             # 图像轮廓获取
-            contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            contours, hierarchy = cv2.findContours(img_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             index = getMaxCounterIndex(contours)
             print(f"轮廓获取完成", end=' ')
 
             # 轮廓绘制
-            cv2.drawContours(binary, contours, index, (118, 215, 234), 1)
-            cv2.imwrite('./Out/Draw-' + filename, binary)  # 图像轮廓输出 用于检查 防止出事
+            cv2.drawContours(img_binary, contours, index, (118, 215, 234), 1)
+            cv2.imwrite('./Out/Draw-' + filename, img_binary)  # 图像轮廓输出 用于检查 防止出事
 
             # 内接圆绘制
             if not os.path.isdir('./Out/CI'):
                 os.mkdir('./Out/CI')
-            inscribed_circle = drawCircleIn(filename, './Out/CI', im_gray, contours[index])
+            inscribed_circle = drawCircleIn(filename, './Out/CI', img, contours[index])
 
             print(f"内接圆获取完成", end=' ')
 
             # 外接圆绘制
             if not os.path.isdir('./Out/CO'):
                 os.mkdir('./Out/CO')
-            circumscribed_circle = drawCircleOut(filename, './Out/CO', im_gray, contours[index])
+            circumscribed_circle = drawCircleOut(filename, './Out/CO', img, contours[index])
 
             print(f"外接圆获取完成", end=' ')
 
@@ -112,13 +124,6 @@ def getMaxCounterIndex(contours):
         index += 1
 
     return max_index
-
-
-# 按特定结构删除指定文件夹下文件
-def delDirFile(path):
-    for filename in os.listdir(path):  # 获取目录下文件名称
-        if filename[-3:len(filename)] == 'tif':  # 筛选需要处理的图片
-            os.remove(path + '/' + filename)
 
 
 if __name__ == '__main__':
