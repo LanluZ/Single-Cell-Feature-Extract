@@ -40,9 +40,12 @@ def main():
             # 反色
             binary = cv2.bitwise_not(binary)
 
+            print(f"开始处理:{str(filename)} 图形尺寸:{binary.shape}", end=' ')
+
             # 图像轮廓获取
             contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             index = getMaxCounterIndex(contours)
+            print(f"轮廓获取完成", end=' ')
 
             # 轮廓绘制
             cv2.drawContours(im, contours, index, (118, 215, 234), 1)
@@ -51,16 +54,19 @@ def main():
             # 内接圆绘制
             if not os.path.isdir('./Out/CI'):
                 os.mkdir('./Out/CI')
-            drawCircleIn(filename, './Out/CI', im_gray, contours[index])
+            inscribed_circle = drawCircleIn(filename, './Out/CI', im_gray, contours[index])
+
+            print(f"内接圆获取完成", end=' ')
 
             # 外接圆绘制
             if not os.path.isdir('./Out/CO'):
                 os.mkdir('./Out/CO')
-            drawCircleOut(filename, './Out/CO', im_gray, contours[index])
+            circumscribed_circle = drawCircleOut(filename, './Out/CO', im_gray, contours[index])
+
+            print(f"外接圆获取完成", end=' ')
 
             # 图像序号
-            data_dic['filename'] = i
-            i += 1
+            data_dic['filename'] = str(filename)
 
             # 像素面积获取
             data_dic['area'] = cv2.contourArea(contours[index])
@@ -69,13 +75,13 @@ def main():
             data_dic['length'] = cv2.arcLength(contours[index], True)
 
             # 内接圆计算
-            data_dic['inscribedCircle'] = calCircleIn(im_gray, contours[index])
+            data_dic['inscribedCircle'] = inscribed_circle
 
             # 外接圆计算
-            data_dic['circumscribedCircle'] = calCircleOut(contours[index])
+            data_dic['circumscribedCircle'] = circumscribed_circle
 
             # 最小外接圆与最大内接圆直径比值
-            data_dic['specificValue'] = data_dic['inscribedCircle'] / data_dic['circumscribedCircle']
+            data_dic['specificValue'] = inscribed_circle / circumscribed_circle
 
             # 矩形度计算
             data_dic['rectangleDegree'] = calRectangleDegree(data_dic['area'], contours[index])
@@ -85,6 +91,8 @@ def main():
 
             # 数据写入
             write.writerow(data_dic)
+
+            print('数据写出完成')
 
         csvfile.close()
 

@@ -17,46 +17,38 @@ def calCircleIn(img, contours_arr):
     _min_val, max_val, _, _max_dist_pt = cv2.minMaxLoc(raw_dist)
     max_val = abs(max_val)
     radius = np.int_(max_val)
-    return radius
+
+    return radius, _max_dist_pt  # 返回半径和中心点坐标
 
 
 # 内接圆绘制
-def drawCircleIn(filename, save_path, img, contours_arr):
-    # 计算到轮廓的距离
-    raw_dist = np.empty(img.shape, dtype=np.float32)
-    for i in range(img.shape[0]):
-        for j in range(img.shape[1]):
-            raw_dist[i, j] = cv2.pointPolygonTest(contours_arr, (j, i), True)
-
-    # 获取最大值即内接圆半径，中心点坐标
-    _min_val, max_val, _, max_dist_pt = cv2.minMaxLoc(raw_dist)
-    max_val = abs(max_val)
-
-    # 画出最大内接圆 避免出事
+def drawCircleIn(filename, save_path, img, contours_arr):  # 画出最大内接圆 避免出事
     result = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-    radius = np.int_(max_val)
+    radius, max_dist_pt = calCircleIn(img, contours_arr)
     cv2.circle(result, max_dist_pt, radius, (0, 0, 255), 1, 1, 0)
-    cv2.imwrite(os.path.join(save_path, filename), result)
+    cv2.imwrite(os.path.join(save_path, filename), img)
+
+    return radius
 
 
 # 外接圆计算
 def calCircleOut(contour):
     cnt = contour
-    (_, _), radius = cv2.minEnclosingCircle(cnt)
+    (x, y), radius = cv2.minEnclosingCircle(cnt)
     radius = int(radius)  # 半径
-    return radius
+    return radius, (x, y)
 
 
 # 外接圆绘制
-def drawCircleOut(filename, save_path, img, contours):
-    cnt = contours
-
-    (x, y), radius = cv2.minEnclosingCircle(cnt)
+def drawCircleOut(filename, save_path, img, contour):
+    radius, (x, y) = calCircleOut(contour)
     center = (int(x), int(y))  # 最小内接圆圆心
     radius = int(radius)  # 半径
     cv2.circle(img, center, radius, (0, 255, 0), 1)
     cv2.circle(img, center, 1, (0, 255, 0), 1)
     cv2.imwrite(os.path.join(save_path, filename), img)
+
+    return radius
 
 
 # 矩形度计算
