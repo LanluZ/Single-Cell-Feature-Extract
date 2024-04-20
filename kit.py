@@ -25,7 +25,7 @@ def calCircleIn(img, contours_arr):
 def drawCircleIn(filename, save_path, img, contours_arr):  # 画出最大内接圆 避免出事
     result = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     radius, max_dist_pt = calCircleIn(img, contours_arr)
-    cv2.circle(result, max_dist_pt, radius, (0, 0, 255), 1, 1, 0)
+    cv2.circle(img, max_dist_pt, radius, (0, 0, 255), 1, 1, 0)
     cv2.imwrite(os.path.join(save_path, filename), img)
 
     return radius
