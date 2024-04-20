@@ -1,15 +1,21 @@
+import copy
+
 import cv2
 import math
 import os.path
 
 import numpy as np
 
+import datetime
+
 
 # 内接圆计算
 def calCircleIn(img, contours_arr):
     # 计算到轮廓的距离
     raw_dist = np.empty(img.shape, dtype=np.float32)
-    for i in range(img.shape[0]):
+    start_i = contours_arr[0, 0, 1]  # 起始行
+    end_i = contours_arr[-1, 0, 1] + 1  # 结束行
+    for i in range(start_i, end_i):
         for j in range(img.shape[1]):
             raw_dist[i, j] = cv2.pointPolygonTest(contours_arr, (j, i), True)
 
@@ -23,6 +29,7 @@ def calCircleIn(img, contours_arr):
 
 # 内接圆绘制
 def drawCircleIn(filename, save_path, img, contours_arr):  # 画出最大内接圆 避免出事
+    img = copy.copy(img)  # 防止指向同一内存
     result = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     radius, max_dist_pt = calCircleIn(img, contours_arr)
     cv2.circle(img, max_dist_pt, radius, (0, 0, 255), 1, 1, 0)
@@ -41,6 +48,7 @@ def calCircleOut(contour):
 
 # 外接圆绘制
 def drawCircleOut(filename, save_path, img, contour):
+    img = copy.copy(img)  # 防止指向同一内存
     radius, (x, y) = calCircleOut(contour)
     center = (int(x), int(y))  # 最小内接圆圆心
     radius = int(radius)  # 半径

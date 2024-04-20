@@ -36,7 +36,7 @@ def main():
             im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)  # 以灰度读入图片
             im_gray = cv2.blur(im_gray, (3, 3))  # 图像滤波
 
-            ret, binary = cv2.threshold(im_gray, 180, 255, cv2.THRESH_BINARY)
+            ret, binary = cv2.threshold(im_gray, 220, 255, cv2.THRESH_BINARY)
             # 反色
             binary = cv2.bitwise_not(binary)
 
@@ -48,8 +48,8 @@ def main():
             print(f"轮廓获取完成", end=' ')
 
             # 轮廓绘制
-            cv2.drawContours(im, contours, index, (118, 215, 234), 1)
-            cv2.imwrite('./Out/Draw-' + filename, im)  # 图像轮廓输出 用于检查 防止出事
+            cv2.drawContours(binary, contours, index, (118, 215, 234), 1)
+            cv2.imwrite('./Out/Draw-' + filename, binary)  # 图像轮廓输出 用于检查 防止出事
 
             # 内接圆绘制
             if not os.path.isdir('./Out/CI'):
