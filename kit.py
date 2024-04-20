@@ -31,7 +31,7 @@ def calCircleIn(img, contours_arr):
 def drawCircleIn(filename, save_path, img, contours_arr):  # 画出最大内接圆 避免出事
     img = copy.copy(img)  # 防止指向同一内存
     radius, center = calCircleIn(img, contours_arr)
-    cv2.circle(img, center, radius, (0, 0, 255), 1)
+    cv2.circle(img, center, int(radius), (0, 0, 255), 1)
     cv2.circle(img, center, 1, (0, 0, 255), 1)
     cv2.imwrite(os.path.join(save_path, filename), img)
 
