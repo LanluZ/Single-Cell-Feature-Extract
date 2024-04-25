@@ -4,6 +4,8 @@ import shutil
 from kit import *
 from move import *
 
+file_suffix = 'png'  # 预处理文件后缀
+
 
 def main():
     # 请自行修改目标存储位置
@@ -41,16 +43,25 @@ def main():
             img = cv2.imread(os.path.join(current_path, 'Data', dirname, filename), cv2.IMREAD_UNCHANGED)
             img = cv2.blur(img, (1, 1))  # 图像滤波
 
-            # 获取透明度通道
-            alpha_channel = img[:, :, 3]
-            # 将透明部分填充为黑色
-            img[alpha_channel == 0] = [0, 0, 0, 255]  # 将RGB通道值设置为黑色，透明度设置为255
-            # 转化为8UC3三通道图像
-            img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
-            # 图像二值化
-            ret, img_binary = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
-            # 转化为8UC1单通道图像
-            img_binary = cv2.cvtColor(img_binary, cv2.COLOR_BGR2GRAY)
+            img_binary = None
+            if file_suffix == 'png':
+                # 获取透明度通道
+                alpha_channel = img[:, :, 3]
+                # 将透明部分填充为黑色
+                img[alpha_channel == 0] = [0, 0, 0, 255]  # 将RGB通道值设置为黑色，透明度设置为255
+                # 转化为8UC3三通道图像
+                img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                # 图像二值化
+                ret, img_binary = cv2.threshold(img, 12, 255, cv2.THRESH_BINARY)
+                # 转化为8UC1单通道图像
+                img_binary = cv2.cvtColor(img_binary, cv2.COLOR_BGR2GRAY)
+            elif file_suffix == 'jpg':
+                # 图像二值化
+                ret, img_binary = cv2.threshold(img, 220, 255, cv2.THRESH_BINARY)
+                # 转化为8UC1单通道图像
+                img_binary = cv2.cvtColor(img_binary, cv2.COLOR_BGR2GRAY)
+                # 反色
+                img_binary = cv2.bitwise_not(img_binary)
 
             print(f"开始处理:{str(filename)} 图形尺寸:{img_binary.shape}", end=' ')
 
