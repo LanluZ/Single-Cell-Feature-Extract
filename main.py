@@ -4,8 +4,6 @@ import shutil
 from kit import *
 from move import *
 
-file_suffix = 'png'  # 预处理文件后缀
-
 
 def main():
     # 请自行修改目标存储位置
@@ -20,6 +18,9 @@ def main():
         current_path = os.path.dirname(__file__)  # 获取当前所在目录
         for filename in os.listdir(current_path + '/Data/' + dirname):  # 获取目录下文件名称
             file_arr.append(filename)
+
+        # 预处理文件后缀
+        file_suffix = file_arr[0].split('.')[-1]
 
         # 删除并创建先前处理文件
         try:
@@ -44,7 +45,7 @@ def main():
             img = cv2.blur(img, (1, 1))  # 图像滤波
 
             img_binary = None
-            if file_suffix == 'png':
+            if file_suffix == 'png' or file_suffix == 'PNG':
                 # 获取透明度通道
                 alpha_channel = img[:, :, 3]
                 # 将透明部分填充为黑色
@@ -55,7 +56,7 @@ def main():
                 ret, img_binary = cv2.threshold(img, 12, 255, cv2.THRESH_BINARY)
                 # 转化为8UC1单通道图像
                 img_binary = cv2.cvtColor(img_binary, cv2.COLOR_BGR2GRAY)
-            elif file_suffix == 'jpg':
+            elif file_suffix == 'jpg' or file_suffix == 'JPG':
                 # 图像二值化
                 ret, img_binary = cv2.threshold(img, 220, 255, cv2.THRESH_BINARY)
                 # 转化为8UC1单通道图像
